@@ -1,0 +1,17 @@
+# IDE e ferramentas locais
+.kilocode/
+
+# Código-fonte original (repositório clonado da AWS — referenciado no README)
+codigo_fonte/
+
+# Binários e artefatos grandes — referencie externamente
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Arquivos temporários
+*.tmp
+*.log
+Thumbs.db
+.DS_Store
