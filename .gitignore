@@ -4,6 +4,11 @@
 # Código-fonte original (repositório clonado da AWS — referenciado no README)
 codigo_fonte/
 
+# Guias internos de organização do projeto (uso local apenas)
+docs/SETUP_GITHUB.md
+docs/GITHUB_PROJECT.md
+docs/ISSUES.md
+
 # Binários e artefatos grandes — referencie externamente
 *.png
 *.jpg
