@@ -177,7 +177,7 @@ flowchart TD
 | 1 | KMS Key e Alias | KMS | ✅ Concluído |
 | 2 | DynamoDB Tables (4) | DynamoDB | ✅ Concluído |
 | 3 | CloudWatch Log Groups | CloudWatch | ✅ Concluído |
-| 4 | SNS Topic | SNS | ⏳ Pendente |
+| 4 | SNS Topic | SNS | ✅ Concluído |
 | 5 | SQS Queues | SQS | ⏳ Pendente |
 | 6 | EventBridge Event Buses | EventBridge | ⏳ Pendente |
 | 7 | IAM Roles e Policies | IAM | ⏳ Pendente |
