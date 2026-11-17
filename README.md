@@ -175,7 +175,7 @@ flowchart TD
 | # | Etapa | Serviço | Status |
 |---|---|---|---|
 | 1 | KMS Key e Alias | KMS | ✅ Concluído |
-| 2 | DynamoDB Tables (4) | DynamoDB | 🔄 Em andamento |
+| 2 | DynamoDB Tables (4) | DynamoDB | ✅ Concluído |
 | 3 | CloudWatch Log Groups | CloudWatch | ⏳ Pendente |
 | 4 | SNS Topic | SNS | ⏳ Pendente |
 | 5 | SQS Queues | SQS | ⏳ Pendente |
