@@ -9,11 +9,18 @@ docs/SETUP_GITHUB.md
 docs/GITHUB_PROJECT.md
 docs/ISSUES.md
 
-# Binários e artefatos grandes — referencie externamente
+# Imagens na raiz do projeto (diagrama AWS, assets externos)
 *.png
 *.jpg
 *.jpeg
 *.gif
+
+# Mas permite imagens dentro da pasta de evidencias
+!evidencias/**/*.png
+!evidencias/**/*.jpg
+!evidencias/**/*.jpeg
+!evidencias/**/*.gif
+!evidencias/**/*.webp
 
 # Arquivos temporários
 *.tmp
