@@ -178,7 +178,7 @@ flowchart TD
 | 2 | DynamoDB Tables (4) | DynamoDB | ✅ Concluído |
 | 3 | CloudWatch Log Groups | CloudWatch | ✅ Concluído |
 | 4 | SNS Topic | SNS | ✅ Concluído |
-| 5 | SQS Queues | SQS | ⏳ Pendente |
+| 5 | SQS Queues | SQS | ✅ Concluído |
 | 6 | EventBridge Event Buses | EventBridge | ⏳ Pendente |
 | 7 | IAM Roles e Policies | IAM | ⏳ Pendente |
 | 8 | Lambda Functions (15) | Lambda | ⏳ Pendente |
