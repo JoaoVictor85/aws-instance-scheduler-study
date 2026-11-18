@@ -180,7 +180,7 @@ flowchart TD
 | 4 | SNS Topic | SNS | ✅ Concluído |
 | 5 | SQS Queues | SQS | ✅ Concluído |
 | 6 | EventBridge Event Buses | EventBridge | ✅ Concluído |
-| 7 | IAM Roles e Policies | IAM | ⏳ Pendente |
+| 7 | IAM Roles e Policies | IAM | ✅ Concluído |
 | 8 | Lambda Functions (15) | Lambda | ⏳ Pendente |
 | 9 | Lambda Permissions e ESM | Lambda / SQS | ⏳ Pendente |
 | 10 | EventBridge Rules | EventBridge | ⏳ Pendente |
