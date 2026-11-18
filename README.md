@@ -179,7 +179,7 @@ flowchart TD
 | 3 | CloudWatch Log Groups | CloudWatch | ✅ Concluído |
 | 4 | SNS Topic | SNS | ✅ Concluído |
 | 5 | SQS Queues | SQS | ✅ Concluído |
-| 6 | EventBridge Event Buses | EventBridge | ⏳ Pendente |
+| 6 | EventBridge Event Buses | EventBridge | ✅ Concluído |
 | 7 | IAM Roles e Policies | IAM | ⏳ Pendente |
 | 8 | Lambda Functions (15) | Lambda | ⏳ Pendente |
 | 9 | Lambda Permissions e ESM | Lambda / SQS | ⏳ Pendente |
