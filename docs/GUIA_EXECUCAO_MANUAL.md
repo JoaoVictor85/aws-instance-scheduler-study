@@ -533,17 +533,43 @@ Esta role é assumida pelas Lambdas de scheduling para agir em EC2, RDS e ASG na
 ## Etapa 8 — Lambda Functions (15 funções)
 
 ### Por que existem?
-Cada Lambda tem uma responsabilidade específica dentro da solução. O código de todas as funções está empacotado em um único arquivo `.zip` hospedado no S3 da AWS:
+Cada Lambda tem uma responsabilidade específica dentro da solução. O código de todas as funções está empacotado em um único arquivo `.zip` hospedado no S3 da AWS.
+
+---
+
+### URL do código S3 — use esta em todas as funções
 
 ```
-s3://solutions-<REGIAO>/instance-scheduler-on-aws/v3.2.15/
-c250a3e6cbc3254dde9ff325f9620daecd1007db263036f1cc8f32dff03dc185.zip
+https://solutions-us-east-1.s3.amazonaws.com/instance-scheduler-on-aws/v3.2.15/c250a3e6cbc3254dde9ff325f9620daecd1007db263036f1cc8f32dff03dc185.zip
 ```
 
-> Exemplo para us-east-1: `s3://solutions-us-east-1/instance-scheduler-on-aws/v3.2.15/<hash>.zip`
+---
+
+### Log groups — referência rápida
+
+| Log group | Funções que usam |
+|---|---|
+| `instance-scheduler-on-aws-default-administrative-logs` | MetricsUuidGenerator, SpokeRegistrationHandler, ResourceRegistrationCreateRegionalEventRulesLambda, ResourceRegistrationLambda, RegionRegistrationCustomResourceLambda, RegionRegistrationWaitLambda, MainLambda, HeartbeatMetricsReporter |
+| `instance-scheduler-on-aws-default-scheduling-logs` | ResizeRequestHandlerLambda, schedulingRequestHandlerLambda, SchedulingOrchestratorLambda |
+| *(sem log group customizado)* | SnsLogForwarder |
+
+---
+
+### Passos para criar cada função
+
+1. **Criar** — nome, runtime Python 3.12, role
+2. **Código** — Upload from → Amazon S3 location → cole a URL acima
+3. **Handler** — Runtime settings → Edit → substituir pelo handler da função
+4. **Memória e Timeout** — Configuration → General configuration → Edit
+5. **Variáveis de ambiente** — Configuration → Environment variables → Edit
+6. **Log group** — Configuration → Monitoring and operations tools → Edit → campo Log group
+7. **Concorrência** — apenas para ResourceRegistrationLambda: Configuration → Concurrency → Reserve concurrency → 1
+
+---
 
 **Runtime de todas as funções:** Python 3.12
-**Variável de ambiente comum a todas:**
+
+**Variáveis de ambiente comuns a todas:**
 ```
 POWERTOOLS_SERVICE_NAME = instance-scheduler
 POWERTOOLS_LOG_LEVEL    = INFO
@@ -559,14 +585,18 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Role | `IS-MetricsGeneratorRole` |
 | Memória | 128 MB |
 | Timeout | 60s |
-| Log group | `AdministrationLogs` |
-| Variáveis extras | `UUID_KEY=/Solutions/instance-scheduler-on-aws/UUID/`, `STACK_ID=<ARN_DA_STACK>` |
+| Log group | `instance-scheduler-on-aws-default-administrative-logs` |
+| Variáveis extras | `UUID_KEY=/Solutions/instance-scheduler-on-aws/UUID/`, `STACK_ID=instance-scheduler-on-aws` |
 
 #### 8.2 — SnsLogForwarder
-| Handler | Role | Memória | Timeout | Log group |
-|---|---|---|---|---|
-| `instance_scheduler.handler.log_forwarding.handle_log_event` | `IS-SnsLogForwarderRole` | 512 MB | 30s | (próprio) |
-| **Variável extra:** `SNS_NOTIFICATION_TOPIC=<ARN_DO_TOPICO_SNS>` | | | | |
+| Campo | Valor |
+|---|---|
+| Handler | `instance_scheduler.handler.log_forwarding.handle_log_event` |
+| Role | `IS-SnsLogForwarderRole` |
+| Memória | 512 MB |
+| Timeout | 30s |
+| Log group | *(não configurar — usa o padrão /aws/lambda/)* |
+| Variável extra | `SNS_NOTIFICATION_TOPIC=<ARN_DO_TOPICO_SNS>` |
 
 #### 8.3 — SpokeRegistrationHandler
 | Campo | Valor |
@@ -576,13 +606,18 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Role | `default-SpokeRegistrationHandler-Role` |
 | Memória | 512 MB |
 | Timeout | 900s |
-| Log group | `AdministrationLogs` |
-| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `SCHEDULE_TAG_KEY=Schedule`, `HUB_STACK_NAME`, `HUB_STACK_ARN`, `SCHEDULING_INTERVAL_MINUTES=5`, `LOCAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `GLOBAL_EVENT_BUS_NAME=IS-GlobalEvents-default`, `SSM_PARAM_PATH_NAME=/IS/default/regions`, `SSM_PARAM_UPDATE_ROLE_NAME=default-SpokeRegistrationUpdateSSMParamRole`, `ENABLE_INFORMATIONAL_TAGGING=True` |
+| Log group | `instance-scheduler-on-aws-default-administrative-logs` |
+| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `SCHEDULE_TAG_KEY=Schedule`, `HUB_STACK_NAME=instance-scheduler-on-aws`, `HUB_STACK_ARN=instance-scheduler-on-aws`, `SCHEDULING_INTERVAL_MINUTES=5`, `LOCAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `GLOBAL_EVENT_BUS_NAME=IS-GlobalEvents-default`, `SSM_PARAM_PATH_NAME=/IS/default/regions`, `SSM_PARAM_UPDATE_ROLE_NAME=default-SpokeRegistrationUpdateSSMParamRole`, `ENABLE_INFORMATIONAL_TAGGING=True`, `ASG_SCHEDULED_RULES_PREFIX=IS-`, `ASG_METADATA_TAG_KEY=scheduled` |
 
 #### 8.4 — ResourceRegistrationCreateRegionalEventRulesLambda
-| Handler | Role | Memória | Timeout |
-|---|---|---|---|
-| `instance_scheduler.handler.create_region_event_rules_handler.lambda_handler` | `IS-CreateRegionalEventRulesRole` | 512 MB | 900s |
+| Campo | Valor |
+|---|---|
+| Handler | `instance_scheduler.handler.create_region_event_rules_handler.lambda_handler` |
+| Role | `IS-CreateRegionalEventRulesRole` |
+| Memória | 512 MB |
+| Timeout | 900s |
+| Log group | `instance-scheduler-on-aws-default-administrative-logs` |
+| Variáveis extras | `SCHEDULE_TAG_KEY=Schedule`, `REGIONAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `EVENT_RULE_PREFIX=IS-Tagging-default`, `VERSION=v3.2.15`, `TAGGING_EVENT_BUS_ARN=<ARN_DO_default-RegistrationEvents>`, `TAGGING_EVENT_RULE_ROLE_ARN=<ARN_DA_IS-CreateRegionalEventRulesRole>` |
 
 #### 8.5 — ResourceRegistrationLambda
 | Campo | Valor |
@@ -591,33 +626,50 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Role | `default-ResourceRegistrationHandler-Role` |
 | Memória | 512 MB |
 | Timeout | 300s |
-| Reserved concurrency | **1** (evita race conditions no registro) |
+| Log group | `instance-scheduler-on-aws-default-administrative-logs` |
+| Concorrência reservada | **1** |
+| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `SCHEDULE_TAG_KEY=Schedule`, `HUB_STACK_NAME=instance-scheduler-on-aws`, `HUB_STACK_ARN=instance-scheduler-on-aws`, `SCHEDULING_INTERVAL_MINUTES=5`, `LOCAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `GLOBAL_EVENT_BUS_NAME=IS-GlobalEvents-default`, `ENABLE_INFORMATIONAL_TAGGING=True`, `ASG_SCHEDULED_RULES_PREFIX=IS-`, `ASG_METADATA_TAG_KEY=scheduled` |
 
 #### 8.6 — RegionRegistrationCustomResourceLambda
-| Handler | Role | Timeout |
-|---|---|---|
-| `instance_scheduler.handler.region_registration_events_handler.lambda_handler` | `default-InvokeHubFunctionRemoteRole` | 900s |
+| Campo | Valor |
+|---|---|
+| Handler | `instance_scheduler.handler.region_registration_events_handler.lambda_handler` |
+| Role | `default-InvokeHubFunctionRemoteRole` |
+| Memória | 512 MB |
+| Timeout | 900s |
+| Log group | `instance-scheduler-on-aws-default-administrative-logs` |
+| Variáveis extras | `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `STACK_ID=instance-scheduler-on-aws`, `SSM_PARAM_PATH=/IS/default/regions`, `HUB_REGISTRATION_FUNCTION_ARN=<ARN_DA_SpokeRegistrationHandler>`, `HUB_REGISTRATION_ROLE_NAME=default-SpokeRegistrationInvokeFunction-Role` |
 
 #### 8.7 — RegionRegistrationWaitLambda
-| Handler | Role | Timeout |
-|---|---|---|
-| `instance_scheduler.handler.region_registration_events_iscomplete_handler.lambda_handler` | `IS-RegionRegistrationWaitRole` | 900s |
+| Campo | Valor |
+|---|---|
+| Handler | `instance_scheduler.handler.region_registration_events_iscomplete_handler.lambda_handler` |
+| Role | `IS-RegionRegistrationWaitRole` |
+| Memória | 512 MB |
+| Timeout | 900s |
+| Log group | `instance-scheduler-on-aws-default-administrative-logs` |
+| Variáveis extras | `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `STACK_ID=instance-scheduler-on-aws`, `SSM_PARAM_PATH=/IS/default/regions`, `HUB_REGISTRATION_FUNCTION_ARN=<ARN_DA_SpokeRegistrationHandler>`, `HUB_REGISTRATION_ROLE_NAME=default-SpokeRegistrationInvokeFunction-Role` |
 
 #### 8.8 — MainLambda
 | Campo | Valor |
 |---|---|
-| Nome | `<STACK_NAME>-InstanceSchedulerMain` |
+| Nome | `instance-scheduler-on-aws-InstanceSchedulerMain` |
 | Handler | `instance_scheduler.main.lambda_handler` |
 | Role | `IS-MainLambdaRole` |
 | Memória | 512 MB |
 | Timeout | 300s |
-| Log group | `AdministrationLogs` |
-| Variáveis extras | `CONFIG_TABLE`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `TOPIC_ARN=<ARN_SNS>` |
+| Log group | `instance-scheduler-on-aws-default-administrative-logs` |
+| Variáveis extras | `CONFIG_TABLE`, `ISSUES_TOPIC_ARN=<ARN_DO_SNS_TOPIC>`, `DEFAULT_TIMEZONE=UTC`, `ENABLE_AWS_ORGANIZATIONS=False`, `SCHEDULING_INTERVAL_MINUTES=5`, `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `SOLUTION_ID=SO0030`, `SOLUTION_VERSION=v3.2.15`, `SEND_METRICS=True`, `METRICS_URL=https://metrics.awssolutionsbuilder.com/generic` |
 
 #### 8.9 — ResizeRequestHandlerLambda
-| Handler | Role | Timeout |
-|---|---|---|
-| `instance_scheduler.handler.resize_handler.lambda_handler` | `default-Ec2ResizeRequestHandler-Role` | 180s |
+| Campo | Valor |
+|---|---|
+| Handler | `instance_scheduler.handler.resize_handler.lambda_handler` |
+| Role | `default-Ec2ResizeRequestHandler-Role` |
+| Memória | 512 MB |
+| Timeout | 180s |
+| Log group | `instance-scheduler-on-aws-default-scheduling-logs` |
+| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `SCHEDULE_TAG_KEY=Schedule`, `LOCAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `GLOBAL_EVENT_BUS_NAME=IS-GlobalEvents-default`, `ENABLE_INFORMATIONAL_TAGGING=True`, `ASG_SCHEDULED_RULES_PREFIX=IS-`, `ASG_METADATA_TAG_KEY=scheduled`, `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `SCHEDULING_INTERVAL_MINUTES=5`, `SOLUTION_ID=SO0030`, `SOLUTION_VERSION=v3.2.15`, `SEND_METRICS=True`, `METRICS_URL=https://metrics.awssolutionsbuilder.com/generic` |
 
 #### 8.10 — schedulingRequestHandlerLambda
 | Campo | Valor |
@@ -626,8 +678,8 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Role | `default-SchedulingRequestHandler-Role` |
 | Memória | 512 MB |
 | Timeout | 300s |
-| Log group | `SchedulingLogs` |
-| Variáveis extras | `CONFIG_TABLE`, `STATE_TABLE`, `REGISTRY_TABLE`, `MAINT_WINDOW_TABLE`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `SCHEDULE_TAG_KEY=Schedule`, `DEFAULT_TIMEZONE=UTC`, `ENABLE_EC2_SSM_MAINTENANCE_WINDOWS=False`, `ENABLE_RDS_SNAPSHOTS=False`, `SCHEDULING_INTERVAL_MINUTES=5`, `LOCAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `GLOBAL_EVENT_BUS_NAME=IS-GlobalEvents-default`, `ENABLE_OPS_MONITORING=True`, `HUB_STACK_NAME`, `HUB_STACK_ARN`, `RESIZE_REQUEST_SQS_URL=<URL_DA_FILA>`, `ENABLE_INFORMATIONAL_TAGGING=True` |
+| Log group | `instance-scheduler-on-aws-default-scheduling-logs` |
+| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `MAINT_WINDOW_TABLE=<NOME_DA_MaintenanceWindowTable>`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `SCHEDULE_TAG_KEY=Schedule`, `DEFAULT_TIMEZONE=UTC`, `ENABLE_EC2_SSM_MAINTENANCE_WINDOWS=False`, `ENABLE_RDS_SNAPSHOTS=False`, `ENABLE_OPS_MONITORING=True`, `LOCAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `GLOBAL_EVENT_BUS_NAME=IS-GlobalEvents-default`, `HUB_STACK_NAME=instance-scheduler-on-aws`, `HUB_STACK_ARN=instance-scheduler-on-aws`, `RESIZE_REQUEST_SQS_URL=<URL_DA_Ec2ResizeRequestQueue>`, `ENABLE_INFORMATIONAL_TAGGING=True`, `ASG_SCHEDULED_RULES_PREFIX=IS-`, `ASG_METADATA_TAG_KEY=scheduled`, `SCHEDULING_INTERVAL_MINUTES=5`, `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `SOLUTION_ID=SO0030`, `SOLUTION_VERSION=v3.2.15`, `SEND_METRICS=True`, `METRICS_URL=https://metrics.awssolutionsbuilder.com/generic` |
 
 #### 8.11 — SchedulingOrchestratorLambda
 | Campo | Valor |
@@ -636,13 +688,20 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Role | `IS-SchedulingOrchestratorRole` |
 | Memória | 512 MB |
 | Timeout | 300s |
-| Log group | `SchedulingLogs` |
-| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `SCHEDULING_REQUEST_HANDLER_NAME=<ARN_DO_SCHEDULING_HANDLER>`, `SCHEDULING_INTERVAL_MINUTES=5` |
+| Log group | `instance-scheduler-on-aws-default-scheduling-logs` |
+| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `SCHEDULING_REQUEST_HANDLER_NAME=<ARN_DA_schedulingRequestHandlerLambda>`, `SCHEDULING_INTERVAL_MINUTES=5` |
+
+> ⚠️ Crie a função 8.10 antes desta. `SCHEDULING_REQUEST_HANDLER_NAME` precisa do ARN da 8.10.
 
 #### 8.12 — HeartbeatMetricsReporter
-| Handler | Role | Timeout |
-|---|---|---|
-| `instance_scheduler.handler.heartbeat_metrics_reporter.report_heartbeat_metric` | `IS-MetricsGeneratorRole` | 300s |
+| Campo | Valor |
+|---|---|
+| Handler | `instance_scheduler.handler.heartbeat_metrics_reporter.report_heartbeat_metric` |
+| Role | `IS-MetricsGeneratorRole` |
+| Memória | 256 MB |
+| Timeout | 300s |
+| Log group | `instance-scheduler-on-aws-default-administrative-logs` |
+| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `DEFAULT_TIMEZONE=UTC`, `ENABLE_RDS_SNAPSHOTS=False`, `ENABLE_AWS_ORGANIZATIONS=False`, `ENABLE_EC2_SSM_MAINTENANCE_WINDOWS=False`, `OPS_DASHBOARD_ENABLED=True`, `SCHEDULING_INTERVAL_MINUTES=5`, `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `SOLUTION_ID=SO0030`, `SOLUTION_VERSION=v3.2.15`, `SEND_METRICS=True`, `METRICS_URL=https://metrics.awssolutionsbuilder.com/generic` |
 
 **Evidência a capturar:** print das funções Lambda criadas → `evidencias/08-lambda/`
 
