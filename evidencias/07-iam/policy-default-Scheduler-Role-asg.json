@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:DescribeScheduledActions"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "autoscaling:BatchPutScheduledUpdateGroupAction",
+        "autoscaling:BatchDeleteScheduledAction",
+        "autoscaling:CreateOrUpdateTags",
+        "autoscaling:DeleteTags"
+      ],
+      "Resource": "arn:aws:autoscaling:*:817697649340:autoScalingGroup:*:autoScalingGroupName/*"
+    }
+  ]
+}

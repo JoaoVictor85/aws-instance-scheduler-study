@@ -1,0 +1,22 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "<ARN_DO_AdministrationLogs>"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameters",
+        "ssm:GetParameter",
+        "ssm:GetParameterHistory"
+      ],
+      "Resource": "arn:aws:ssm:us-east-1:817697649340:parameter/Solutions/instance-scheduler-on-aws/UUID/*"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::817697649340:role/default-SchedulingRequestHandler-Role",
+          "arn:aws:iam::817697649340:role/default-ResourceRegistrationHandler-Role",
+          "arn:aws:iam::817697649340:role/default-Ec2ResizeRequestHandler-Role",
+          "arn:aws:iam::817697649340:role/default-SpokeRegistrationHandler-Role"
+        ]
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
