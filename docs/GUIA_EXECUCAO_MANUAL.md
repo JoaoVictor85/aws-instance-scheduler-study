@@ -578,7 +578,10 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 
 ### Funções a criar
 
+---
+
 #### 8.1 — MetricsUuidGenerator
+
 | Campo | Valor |
 |---|---|
 | Handler | `instance_scheduler.handler.metrics_uuid_custom_resource.lambda_handler` |
@@ -586,30 +589,77 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Memória | 128 MB |
 | Timeout | 60s |
 | Log group | `instance-scheduler-on-aws-default-administrative-logs` |
-| Variáveis extras | `UUID_KEY=/Solutions/instance-scheduler-on-aws/UUID/`, `STACK_ID=instance-scheduler-on-aws` |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `UUID_KEY` | `/Solutions/instance-scheduler-on-aws/UUID/` |
+| `STACK_ID` | `instance-scheduler-on-aws` |
+
+---
 
 #### 8.2 — SnsLogForwarder
+
 | Campo | Valor |
 |---|---|
 | Handler | `instance_scheduler.handler.log_forwarding.handle_log_event` |
 | Role | `IS-SnsLogForwarderRole` |
 | Memória | 512 MB |
 | Timeout | 30s |
-| Log group | *(não configurar — usa o padrão /aws/lambda/)* |
-| Variável extra | `SNS_NOTIFICATION_TOPIC=<ARN_DO_TOPICO_SNS>` |
+| Log group | *(não configurar — usa o padrão `/aws/lambda/`)* |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `SNS_NOTIFICATION_TOPIC` | ARN do tópico SNS — copie em SNS → Topics → InstanceSchedulerSnsTopic |
+
+---
 
 #### 8.3 — SpokeRegistrationHandler
+
 | Campo | Valor |
 |---|---|
-| Nome | `InstanceScheduler-default-SpokeRegistration` |
+| **Nome** | `InstanceScheduler-default-SpokeRegistration` |
 | Handler | `instance_scheduler.handler.spoke_registration.lambda_handler` |
 | Role | `default-SpokeRegistrationHandler-Role` |
 | Memória | 512 MB |
 | Timeout | 900s |
 | Log group | `instance-scheduler-on-aws-default-administrative-logs` |
-| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `SCHEDULE_TAG_KEY=Schedule`, `HUB_STACK_NAME=instance-scheduler-on-aws`, `HUB_STACK_ARN=instance-scheduler-on-aws`, `SCHEDULING_INTERVAL_MINUTES=5`, `LOCAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `GLOBAL_EVENT_BUS_NAME=IS-GlobalEvents-default`, `SSM_PARAM_PATH_NAME=/IS/default/regions`, `SSM_PARAM_UPDATE_ROLE_NAME=default-SpokeRegistrationUpdateSSMParamRole`, `ENABLE_INFORMATIONAL_TAGGING=True`, `ASG_SCHEDULED_RULES_PREFIX=IS-`, `ASG_METADATA_TAG_KEY=scheduled` |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `CONFIG_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ConfigTable |
+| `REGISTRY_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ResourceRegistry |
+| `SCHEDULER_ROLE_NAME` | `default-Scheduler-Role` |
+| `SCHEDULE_TAG_KEY` | `Schedule` |
+| `HUB_STACK_NAME` | `instance-scheduler-on-aws` |
+| `HUB_STACK_ARN` | `instance-scheduler-on-aws` |
+| `SCHEDULING_INTERVAL_MINUTES` | `5` |
+| `LOCAL_EVENT_BUS_NAME` | `IS-LocalEvents-default` |
+| `GLOBAL_EVENT_BUS_NAME` | `IS-GlobalEvents-default` |
+| `SSM_PARAM_PATH_NAME` | `/IS/default/regions` |
+| `SSM_PARAM_UPDATE_ROLE_NAME` | `default-SpokeRegistrationUpdateSSMParamRole` |
+| `ENABLE_INFORMATIONAL_TAGGING` | `True` |
+| `ASG_SCHEDULED_RULES_PREFIX` | `IS-` |
+| `ASG_METADATA_TAG_KEY` | `scheduled` |
+
+---
 
 #### 8.4 — ResourceRegistrationCreateRegionalEventRulesLambda
+
 | Campo | Valor |
 |---|---|
 | Handler | `instance_scheduler.handler.create_region_event_rules_handler.lambda_handler` |
@@ -617,9 +667,25 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Memória | 512 MB |
 | Timeout | 900s |
 | Log group | `instance-scheduler-on-aws-default-administrative-logs` |
-| Variáveis extras | `SCHEDULE_TAG_KEY=Schedule`, `REGIONAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `EVENT_RULE_PREFIX=IS-Tagging-default`, `VERSION=v3.2.15`, `TAGGING_EVENT_BUS_ARN=<ARN_DO_default-RegistrationEvents>`, `TAGGING_EVENT_RULE_ROLE_ARN=<ARN_DA_IS-CreateRegionalEventRulesRole>` |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `SCHEDULE_TAG_KEY` | `Schedule` |
+| `REGIONAL_EVENT_BUS_NAME` | `IS-LocalEvents-default` |
+| `EVENT_RULE_PREFIX` | `IS-Tagging-default` |
+| `VERSION` | `v3.2.15` |
+| `TAGGING_EVENT_BUS_ARN` | ARN do bus — copie em EventBridge → Event buses → default-RegistrationEvents |
+| `TAGGING_EVENT_RULE_ROLE_ARN` | ARN da role — copie em IAM → Roles → IS-CreateRegionalEventRulesRole |
+
+---
 
 #### 8.5 — ResourceRegistrationLambda
+
 | Campo | Valor |
 |---|---|
 | Handler | `instance_scheduler.handler.resource_registration_handler.lambda_handler` |
@@ -627,10 +693,34 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Memória | 512 MB |
 | Timeout | 300s |
 | Log group | `instance-scheduler-on-aws-default-administrative-logs` |
-| Concorrência reservada | **1** |
-| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `SCHEDULE_TAG_KEY=Schedule`, `HUB_STACK_NAME=instance-scheduler-on-aws`, `HUB_STACK_ARN=instance-scheduler-on-aws`, `SCHEDULING_INTERVAL_MINUTES=5`, `LOCAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `GLOBAL_EVENT_BUS_NAME=IS-GlobalEvents-default`, `ENABLE_INFORMATIONAL_TAGGING=True`, `ASG_SCHEDULED_RULES_PREFIX=IS-`, `ASG_METADATA_TAG_KEY=scheduled` |
+| **Concorrência reservada** | **1** — Configuration → Concurrency → Reserve concurrency |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `CONFIG_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ConfigTable |
+| `REGISTRY_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ResourceRegistry |
+| `SCHEDULER_ROLE_NAME` | `default-Scheduler-Role` |
+| `SCHEDULE_TAG_KEY` | `Schedule` |
+| `HUB_STACK_NAME` | `instance-scheduler-on-aws` |
+| `HUB_STACK_ARN` | `instance-scheduler-on-aws` |
+| `SCHEDULING_INTERVAL_MINUTES` | `5` |
+| `LOCAL_EVENT_BUS_NAME` | `IS-LocalEvents-default` |
+| `GLOBAL_EVENT_BUS_NAME` | `IS-GlobalEvents-default` |
+| `ENABLE_INFORMATIONAL_TAGGING` | `True` |
+| `ASG_SCHEDULED_RULES_PREFIX` | `IS-` |
+| `ASG_METADATA_TAG_KEY` | `scheduled` |
+
+---
 
 #### 8.6 — RegionRegistrationCustomResourceLambda
+
+> ⚠️ Crie após a função 8.3 (SpokeRegistrationHandler) — precisa do ARN dela.
+
 | Campo | Valor |
 |---|---|
 | Handler | `instance_scheduler.handler.region_registration_events_handler.lambda_handler` |
@@ -638,9 +728,26 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Memória | 512 MB |
 | Timeout | 900s |
 | Log group | `instance-scheduler-on-aws-default-administrative-logs` |
-| Variáveis extras | `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `STACK_ID=instance-scheduler-on-aws`, `SSM_PARAM_PATH=/IS/default/regions`, `HUB_REGISTRATION_FUNCTION_ARN=<ARN_DA_SpokeRegistrationHandler>`, `HUB_REGISTRATION_ROLE_NAME=default-SpokeRegistrationInvokeFunction-Role` |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `HUB_ACCOUNT_ID` | ID da sua conta — CloudShell: `aws sts get-caller-identity --query Account --output text` |
+| `STACK_ID` | `instance-scheduler-on-aws` |
+| `SSM_PARAM_PATH` | `/IS/default/regions` |
+| `HUB_REGISTRATION_FUNCTION_ARN` | ARN da função 8.3 — copie em Lambda → InstanceScheduler-default-SpokeRegistration |
+| `HUB_REGISTRATION_ROLE_NAME` | `default-SpokeRegistrationInvokeFunction-Role` |
+
+---
 
 #### 8.7 — RegionRegistrationWaitLambda
+
+> ⚠️ Crie após a função 8.3 (SpokeRegistrationHandler) — precisa do ARN dela.
+
 | Campo | Valor |
 |---|---|
 | Handler | `instance_scheduler.handler.region_registration_events_iscomplete_handler.lambda_handler` |
@@ -648,20 +755,55 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Memória | 512 MB |
 | Timeout | 900s |
 | Log group | `instance-scheduler-on-aws-default-administrative-logs` |
-| Variáveis extras | `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `STACK_ID=instance-scheduler-on-aws`, `SSM_PARAM_PATH=/IS/default/regions`, `HUB_REGISTRATION_FUNCTION_ARN=<ARN_DA_SpokeRegistrationHandler>`, `HUB_REGISTRATION_ROLE_NAME=default-SpokeRegistrationInvokeFunction-Role` |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `HUB_ACCOUNT_ID` | ID da sua conta — CloudShell: `aws sts get-caller-identity --query Account --output text` |
+| `STACK_ID` | `instance-scheduler-on-aws` |
+| `SSM_PARAM_PATH` | `/IS/default/regions` |
+| `HUB_REGISTRATION_FUNCTION_ARN` | ARN da função 8.3 — copie em Lambda → InstanceScheduler-default-SpokeRegistration |
+| `HUB_REGISTRATION_ROLE_NAME` | `default-SpokeRegistrationInvokeFunction-Role` |
+
+---
 
 #### 8.8 — MainLambda
+
 | Campo | Valor |
 |---|---|
-| Nome | `instance-scheduler-on-aws-InstanceSchedulerMain` |
+| **Nome** | `instance-scheduler-on-aws-InstanceSchedulerMain` |
 | Handler | `instance_scheduler.main.lambda_handler` |
 | Role | `IS-MainLambdaRole` |
 | Memória | 512 MB |
 | Timeout | 300s |
 | Log group | `instance-scheduler-on-aws-default-administrative-logs` |
-| Variáveis extras | `CONFIG_TABLE`, `ISSUES_TOPIC_ARN=<ARN_DO_SNS_TOPIC>`, `DEFAULT_TIMEZONE=UTC`, `ENABLE_AWS_ORGANIZATIONS=False`, `SCHEDULING_INTERVAL_MINUTES=5`, `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `SOLUTION_ID=SO0030`, `SOLUTION_VERSION=v3.2.15`, `SEND_METRICS=True`, `METRICS_URL=https://metrics.awssolutionsbuilder.com/generic` |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `CONFIG_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ConfigTable |
+| `ISSUES_TOPIC_ARN` | ARN do tópico SNS — copie em SNS → Topics → InstanceSchedulerSnsTopic |
+| `DEFAULT_TIMEZONE` | `UTC` |
+| `ENABLE_AWS_ORGANIZATIONS` | `False` |
+| `SCHEDULING_INTERVAL_MINUTES` | `5` |
+| `HUB_ACCOUNT_ID` | ID da sua conta — CloudShell: `aws sts get-caller-identity --query Account --output text` |
+| `SOLUTION_ID` | `SO0030` |
+| `SOLUTION_VERSION` | `v3.2.15` |
+| `SEND_METRICS` | `True` |
+| `METRICS_URL` | `https://metrics.awssolutionsbuilder.com/generic` |
+
+---
 
 #### 8.9 — ResizeRequestHandlerLambda
+
 | Campo | Valor |
 |---|---|
 | Handler | `instance_scheduler.handler.resize_handler.lambda_handler` |
@@ -669,9 +811,34 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Memória | 512 MB |
 | Timeout | 180s |
 | Log group | `instance-scheduler-on-aws-default-scheduling-logs` |
-| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `SCHEDULE_TAG_KEY=Schedule`, `LOCAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `GLOBAL_EVENT_BUS_NAME=IS-GlobalEvents-default`, `ENABLE_INFORMATIONAL_TAGGING=True`, `ASG_SCHEDULED_RULES_PREFIX=IS-`, `ASG_METADATA_TAG_KEY=scheduled`, `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `SCHEDULING_INTERVAL_MINUTES=5`, `SOLUTION_ID=SO0030`, `SOLUTION_VERSION=v3.2.15`, `SEND_METRICS=True`, `METRICS_URL=https://metrics.awssolutionsbuilder.com/generic` |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `CONFIG_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ConfigTable |
+| `REGISTRY_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ResourceRegistry |
+| `SCHEDULER_ROLE_NAME` | `default-Scheduler-Role` |
+| `SCHEDULE_TAG_KEY` | `Schedule` |
+| `LOCAL_EVENT_BUS_NAME` | `IS-LocalEvents-default` |
+| `GLOBAL_EVENT_BUS_NAME` | `IS-GlobalEvents-default` |
+| `ENABLE_INFORMATIONAL_TAGGING` | `True` |
+| `ASG_SCHEDULED_RULES_PREFIX` | `IS-` |
+| `ASG_METADATA_TAG_KEY` | `scheduled` |
+| `HUB_ACCOUNT_ID` | ID da sua conta — CloudShell: `aws sts get-caller-identity --query Account --output text` |
+| `SCHEDULING_INTERVAL_MINUTES` | `5` |
+| `SOLUTION_ID` | `SO0030` |
+| `SOLUTION_VERSION` | `v3.2.15` |
+| `SEND_METRICS` | `True` |
+| `METRICS_URL` | `https://metrics.awssolutionsbuilder.com/generic` |
+
+---
 
 #### 8.10 — schedulingRequestHandlerLambda
+
 | Campo | Valor |
 |---|---|
 | Handler | `instance_scheduler.handler.scheduling_request.handle_scheduling_request` |
@@ -679,9 +846,44 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Memória | 512 MB |
 | Timeout | 300s |
 | Log group | `instance-scheduler-on-aws-default-scheduling-logs` |
-| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `MAINT_WINDOW_TABLE=<NOME_DA_MaintenanceWindowTable>`, `SCHEDULER_ROLE_NAME=default-Scheduler-Role`, `SCHEDULE_TAG_KEY=Schedule`, `DEFAULT_TIMEZONE=UTC`, `ENABLE_EC2_SSM_MAINTENANCE_WINDOWS=False`, `ENABLE_RDS_SNAPSHOTS=False`, `ENABLE_OPS_MONITORING=True`, `LOCAL_EVENT_BUS_NAME=IS-LocalEvents-default`, `GLOBAL_EVENT_BUS_NAME=IS-GlobalEvents-default`, `HUB_STACK_NAME=instance-scheduler-on-aws`, `HUB_STACK_ARN=instance-scheduler-on-aws`, `RESIZE_REQUEST_SQS_URL=<URL_DA_Ec2ResizeRequestQueue>`, `ENABLE_INFORMATIONAL_TAGGING=True`, `ASG_SCHEDULED_RULES_PREFIX=IS-`, `ASG_METADATA_TAG_KEY=scheduled`, `SCHEDULING_INTERVAL_MINUTES=5`, `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `SOLUTION_ID=SO0030`, `SOLUTION_VERSION=v3.2.15`, `SEND_METRICS=True`, `METRICS_URL=https://metrics.awssolutionsbuilder.com/generic` |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `CONFIG_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ConfigTable |
+| `REGISTRY_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ResourceRegistry |
+| `MAINT_WINDOW_TABLE` | Nome da tabela — copie em DynamoDB → Tables → MaintenanceWindowTable |
+| `SCHEDULER_ROLE_NAME` | `default-Scheduler-Role` |
+| `SCHEDULE_TAG_KEY` | `Schedule` |
+| `DEFAULT_TIMEZONE` | `UTC` |
+| `ENABLE_EC2_SSM_MAINTENANCE_WINDOWS` | `False` |
+| `ENABLE_RDS_SNAPSHOTS` | `False` |
+| `ENABLE_OPS_MONITORING` | `True` |
+| `LOCAL_EVENT_BUS_NAME` | `IS-LocalEvents-default` |
+| `GLOBAL_EVENT_BUS_NAME` | `IS-GlobalEvents-default` |
+| `HUB_STACK_NAME` | `instance-scheduler-on-aws` |
+| `HUB_STACK_ARN` | `instance-scheduler-on-aws` |
+| `RESIZE_REQUEST_SQS_URL` | URL da fila — copie em SQS → Ec2ResizeRequestQueue → Details → URL |
+| `ENABLE_INFORMATIONAL_TAGGING` | `True` |
+| `ASG_SCHEDULED_RULES_PREFIX` | `IS-` |
+| `ASG_METADATA_TAG_KEY` | `scheduled` |
+| `SCHEDULING_INTERVAL_MINUTES` | `5` |
+| `HUB_ACCOUNT_ID` | ID da sua conta — CloudShell: `aws sts get-caller-identity --query Account --output text` |
+| `SOLUTION_ID` | `SO0030` |
+| `SOLUTION_VERSION` | `v3.2.15` |
+| `SEND_METRICS` | `True` |
+| `METRICS_URL` | `https://metrics.awssolutionsbuilder.com/generic` |
+
+---
 
 #### 8.11 — SchedulingOrchestratorLambda
+
+> ⚠️ Crie após a função 8.10 — precisa do ARN dela.
+
 | Campo | Valor |
 |---|---|
 | Handler | `instance_scheduler.handler.scheduling_orchestrator.lambda_handler` |
@@ -689,11 +891,23 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Memória | 512 MB |
 | Timeout | 300s |
 | Log group | `instance-scheduler-on-aws-default-scheduling-logs` |
-| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `SCHEDULING_REQUEST_HANDLER_NAME=<ARN_DA_schedulingRequestHandlerLambda>`, `SCHEDULING_INTERVAL_MINUTES=5` |
 
-> ⚠️ Crie a função 8.10 antes desta. `SCHEDULING_REQUEST_HANDLER_NAME` precisa do ARN da 8.10.
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `CONFIG_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ConfigTable |
+| `REGISTRY_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ResourceRegistry |
+| `SCHEDULING_REQUEST_HANDLER_NAME` | ARN da função 8.10 — copie em Lambda → schedulingRequestHandlerLambda |
+| `SCHEDULING_INTERVAL_MINUTES` | `5` |
+
+---
 
 #### 8.12 — HeartbeatMetricsReporter
+
 | Campo | Valor |
 |---|---|
 | Handler | `instance_scheduler.handler.heartbeat_metrics_reporter.report_heartbeat_metric` |
@@ -701,7 +915,27 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Memória | 256 MB |
 | Timeout | 300s |
 | Log group | `instance-scheduler-on-aws-default-administrative-logs` |
-| Variáveis extras | `CONFIG_TABLE`, `REGISTRY_TABLE`, `DEFAULT_TIMEZONE=UTC`, `ENABLE_RDS_SNAPSHOTS=False`, `ENABLE_AWS_ORGANIZATIONS=False`, `ENABLE_EC2_SSM_MAINTENANCE_WINDOWS=False`, `OPS_DASHBOARD_ENABLED=True`, `SCHEDULING_INTERVAL_MINUTES=5`, `HUB_ACCOUNT_ID=<ACCOUNT_ID>`, `SOLUTION_ID=SO0030`, `SOLUTION_VERSION=v3.2.15`, `SEND_METRICS=True`, `METRICS_URL=https://metrics.awssolutionsbuilder.com/generic` |
+
+**Variáveis de ambiente:**
+
+| Chave | Valor |
+|---|---|
+| `POWERTOOLS_SERVICE_NAME` | `instance-scheduler` |
+| `POWERTOOLS_LOG_LEVEL` | `INFO` |
+| `USER_AGENT_EXTRA` | `AwsSolution/SO0030/v3.2.15` |
+| `CONFIG_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ConfigTable |
+| `REGISTRY_TABLE` | Nome da tabela — copie em DynamoDB → Tables → ResourceRegistry |
+| `DEFAULT_TIMEZONE` | `UTC` |
+| `ENABLE_RDS_SNAPSHOTS` | `False` |
+| `ENABLE_AWS_ORGANIZATIONS` | `False` |
+| `ENABLE_EC2_SSM_MAINTENANCE_WINDOWS` | `False` |
+| `OPS_DASHBOARD_ENABLED` | `True` |
+| `SCHEDULING_INTERVAL_MINUTES` | `5` |
+| `HUB_ACCOUNT_ID` | ID da sua conta — CloudShell: `aws sts get-caller-identity --query Account --output text` |
+| `SOLUTION_ID` | `SO0030` |
+| `SOLUTION_VERSION` | `v3.2.15` |
+| `SEND_METRICS` | `True` |
+| `METRICS_URL` | `https://metrics.awssolutionsbuilder.com/generic` |
 
 **Evidência a capturar:** print das funções Lambda criadas → `evidencias/08-lambda/`
 
