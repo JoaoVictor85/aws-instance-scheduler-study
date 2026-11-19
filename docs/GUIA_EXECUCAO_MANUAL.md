@@ -693,7 +693,7 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | Memória | 512 MB |
 | Timeout | 300s |
 | Log group | `instance-scheduler-on-aws-default-administrative-logs` |
-| **Concorrência reservada** | **1** — Configuration → Concurrency → Reserve concurrency |
+| **Concorrência reservada** | **Não configurar** — o console exige mínimo de 100, o que não se aplica aqui. Deixe em "Utilizar a simultaneidade de contas não reservadas" |
 
 **Variáveis de ambiente:**
 
