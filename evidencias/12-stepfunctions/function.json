@@ -1,0 +1,33 @@
+{
+  "StartAt": "framework-isComplete-task",
+  "States": {
+    "framework-isComplete-task": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:817697649340:function:RegionRegistrationWaitLambda",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "IntervalSeconds": 30,
+          "MaxAttempts": 40,
+          "BackoffRate": 1
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "framework-onTimeout-task"
+        }
+      ],
+      "End": true
+    },
+    "framework-onTimeout-task": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:817697649340:function:RegionRegistrationCustomResourceLambda",
+      "End": true
+    }
+  }
+}
