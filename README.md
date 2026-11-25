@@ -182,7 +182,7 @@ flowchart TD
 | 6 | EventBridge Event Buses | EventBridge | ✅ Concluído |
 | 7 | IAM Roles e Policies | IAM | ✅ Concluído |
 | 8 | Lambda Functions (15) | Lambda | ✅ Concluído |
-| 9 | Lambda Permissions e ESM | Lambda / SQS | ⏳ Pendente |
+| 9 | Lambda Permissions e ESM | Lambda / SQS | ✅ Concluído |
 | 10 | EventBridge Rules | EventBridge | ⏳ Pendente |
 | 11 | CloudWatch Subscription Filters | CloudWatch | ⏳ Pendente |
 | 12 | Step Functions State Machine | Step Functions | ⏳ Pendente |
