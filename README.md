@@ -187,7 +187,7 @@ flowchart TD
 | 10 | EventBridge Rules | EventBridge | ✅ Concluído |
 | 11 | CloudWatch Subscription Filters | CloudWatch | ✅ Concluído |
 | 12 | Step Functions State Machine | Step Functions | ✅ Concluído |
-| 13 | Inicialização via CloudShell | Lambda / DynamoDB | ⏳ Pendente |
+| 13 | Inicialização via CloudShell | Lambda / DynamoDB | ✅ Concluído |
 | 14 | CloudWatch Dashboard | CloudWatch | ⏳ Pendente |
 | 15 | Validação end-to-end com EC2 | EC2 | ⏳ Pendente |
 
