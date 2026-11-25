@@ -184,8 +184,8 @@ flowchart TD
 | 7 | IAM Roles e Policies | IAM | ✅ Concluído |
 | 8 | Lambda Functions (15) | Lambda | ✅ Concluído |
 | 9 | Lambda Permissions e ESM | Lambda / SQS | ✅ Concluído |
-| 10 | EventBridge Rules | EventBridge | ⏳ Pendente |
-| 11 | CloudWatch Subscription Filters | CloudWatch | ⏳ Pendente |
+| 10 | EventBridge Rules | EventBridge | ✅ Concluído |
+| 11 | CloudWatch Subscription Filters | CloudWatch | ✅ Concluído |
 | 12 | Step Functions State Machine | Step Functions | ⏳ Pendente |
 | 13 | Inicialização via CloudShell | Lambda / DynamoDB | ⏳ Pendente |
 | 14 | CloudWatch Dashboard | CloudWatch | ⏳ Pendente |
