@@ -158,7 +158,8 @@ flowchart TD
     ├── 06-eventbridge/
     ├── 07-iam/
     ├── 08-lambda/
-    ├── 09-eventbridge-rules/
+    │   └── 09-lambda-permissions/
+    ├── 10-eventbridge-rules/
     ├── 10-stepfunctions/
     ├── 11-inicializacao/
     ├── 12-dashboard/

@@ -29,7 +29,7 @@ evidencias/
 │   └── roles-criadas.png
 ├── 08-lambda/
 │   └── funcoes-criadas.png
-├── 09-eventbridge-rules/
+├── 10-eventbridge-rules/
 │   └── regras-criadas.png
 ├── 10-execucao/
 │   ├── scheduler-executando.png    # CloudWatch Logs mostrando o scheduler rodando

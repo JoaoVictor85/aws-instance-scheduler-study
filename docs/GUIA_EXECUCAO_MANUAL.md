@@ -937,7 +937,7 @@ USER_AGENT_EXTRA        = AwsSolution/SO0030/v3.2.15
 | `SEND_METRICS` | `True` |
 | `METRICS_URL` | `https://metrics.awssolutionsbuilder.com/generic` |
 
-**Evidência a capturar:** print das funções Lambda criadas → `evidencias/08-lambda/`
+**Evidência a capturar:** prints das permissões e do trigger criados → `evidencias/08-lambda/09-lambda-permissions/`
 
 ---
 
@@ -971,44 +971,125 @@ Source ARN:  <ARN_DO_SchedulingLogs>
 
 ## Etapa 10 — EventBridge Rules (4 regras)
 
-### 10.1 — SchedulerEventRule (cron principal)
+### Contexto: o que são regras e como diferem dos buses?
+
+Na Etapa 6 você criou os **event buses** — os canais por onde os eventos trafegam. Agora você cria as **regras** — os filtros que definem quais eventos interessam e para onde eles são entregues.
+
+Cada regra tem três partes:
+- **Event pattern ou Schedule** — o critério de filtro
+- **Event bus** — em qual bus a regra fica escutando
+- **Target** — para onde o evento é enviado (neste caso, sempre uma Lambda)
+
+### Onde criar cada tipo de regra no console
+
+O console do EventBridge separa as regras em dois lugares:
+
+| Tipo de regra | Onde criar |
+|---|---|
+| Regras de **agendamento** (cron/rate) | EventBridge → **Scheduler → Schedules** |
+| Regras de **evento** (padrão de evento) | EventBridge → **Event buses → Rules** (selecione o bus e clique em "Create rule") |
+
+---
+
+### Regra 1 — IS-SchedulerEventRule (agendamento)
+
+Dispara o ciclo de agendamento a cada 5 minutos.
+
+**Caminho:** EventBridge → Scheduler → Schedules → **Create schedule**
 
 | Campo | Valor |
 |---|---|
 | Nome | `IS-SchedulerEventRule` |
-| Bus | default (event bus padrão da AWS) |
-| Schedule | `cron(0/5 * * * ? *)` — a cada 5 minutos |
-| Target | ARN da `SchedulingOrchestratorLambda` |
-| Estado | ENABLED |
+| Schedule group | `default` |
+| Occurrence | **Recurring schedule** |
+| Schedule type | **Cron-based schedule** |
+| Cron expression | `0/5 * * * ? *` |
+| Flexible time window | **Off** |
+| Target | Lambda function → `SchedulingOrchestratorLambda` |
+| Payload | `{"scheduled_action": "run_orchestrator"}` |
+| Estado | Enabled |
 
-> Ajuste o cron conforme o `SchedulerFrequency` desejado. Exemplos: `cron(0/10 * * * ? *)` para 10 min, `cron(0 * * * ? *)` para 60 min.
+---
 
-### 10.2 — MetricsGathererEventRule (diário)
+### Regra 2 — IS-MetricsGathererEventRule (agendamento)
 
-| Campo | Valor |
-|---|---|
-| Schedule | `rate(1 day)` |
-| Target | ARN da `HeartbeatMetricsReporter` |
+Dispara o coletor de métricas uma vez por dia.
 
-### 10.3 — TaggingEventsToLambda (tag events EC2/RDS)
-
-| Campo | Valor |
-|---|---|
-| Bus | default |
-| Event pattern | `{"source": ["aws.tag"], "detail-type": ["Tag Change on Resource"], "detail": {"changed-tag-keys": ["Schedule"]}}` |
-| Target | ARN da `ResourceRegistrationLambda` |
-| DLQ | ARN da `ResourceRegistrationDLQ` |
-
-### 10.4 — AsgTaggingEventsToLambda (tag events ASG)
+**Caminho:** EventBridge → Scheduler → Schedules → **Create schedule**
 
 | Campo | Valor |
 |---|---|
-| Bus | default |
-| Event pattern | `{"source": ["aws.autoscaling"], "detail-type": ["EC2 Auto Scaling Group Created", "EC2 Auto Scaling Group Tags Modified"]}` |
-| Target | ARN da `ResourceRegistrationLambda` |
-| DLQ | ARN da `ResourceRegistrationDLQ` |
+| Nome | `IS-MetricsGathererEventRule` |
+| Schedule group | `default` |
+| Occurrence | **Recurring schedule** |
+| Schedule type | **Rate-based schedule** |
+| Rate | `1 day` |
+| Flexible time window | **Off** |
+| Target | Lambda function → `HeartbeatMetricsReporter` |
+| Estado | Enabled |
 
-**Evidência a capturar:** print das 4 regras no console EventBridge → `evidencias/09-eventbridge-rules/`
+---
+
+### Regra 3 — IS-TaggingEventsToLambda (evento)
+
+Detecta quando a tag `Schedule` é adicionada ou removida de instâncias EC2 ou RDS.
+
+**Caminho:** EventBridge → Event buses → `default-RegistrationEvents` → aba **Rules** → **Create rule**
+
+| Campo | Valor |
+|---|---|
+| Nome | `IS-TaggingEventsToLambda` |
+| Event bus | `default-RegistrationEvents` |
+| Rule type | **Rule with an event pattern** |
+| Target | Lambda function → `ResourceRegistrationLambda` |
+| Dead-letter queue | `ResourceRegistrationDLQ` |
+| Estado | Enabled |
+
+Event pattern:
+```json
+{
+  "source": ["aws.tag"],
+  "detail": {
+    "changed-tag-keys": ["Schedule"]
+  }
+}
+```
+
+---
+
+### Regra 4 — IS-AsgTaggingEventsToLambda (evento)
+
+Detecta quando a tag `Schedule` é adicionada em Auto Scaling Groups.
+
+**Caminho:** EventBridge → Event buses → `default-RegistrationEvents` → aba **Rules** → **Create rule**
+
+| Campo | Valor |
+|---|---|
+| Nome | `IS-AsgTaggingEventsToLambda` |
+| Event bus | `default-RegistrationEvents` |
+| Rule type | **Rule with an event pattern** |
+| Target | Lambda function → `ResourceRegistrationLambda` |
+| Dead-letter queue | `ResourceRegistrationDLQ` |
+| Estado | Enabled |
+
+Event pattern:
+```json
+{
+  "source": ["aws.autoscaling"],
+  "detail-type": ["AWS API Call via CloudTrail"],
+  "detail": {
+    "eventSource": ["autoscaling.amazonaws.com"],
+    "eventName": ["CreateOrUpdateTags", "DeleteTags", "CreateAutoScalingGroup"],
+    "requestParameters": {
+      "tags": {
+        "key": ["Schedule"]
+      }
+    }
+  }
+}
+```
+
+**Evidência a capturar:** print das 4 regras criadas → `evidencias/10-eventbridge-rules/`
 
 ---
 
